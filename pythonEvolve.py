@@ -187,6 +187,7 @@ def handlePremissiles(ss1, ss2):
 
 def handleCombat(ss1, ss2):
     #return -1 if player 1 wins, 0 if tie, 1 if player 2 wins 
+    #need to have new variables for this, beacsue cant overwrite object values
     ss2IncomingDmgAmp = 0
     if ss2.incomingDamageAmplifier > 0:
         ss2IncomingDmgAmp = ss2.incomingDamageAmplifier
@@ -194,40 +195,54 @@ def handleCombat(ss1, ss2):
     if ss1.incomingDamageAmplifier > 0:
         ss1IncomingDmgAmp = ss1.incomingDamageAmplifier
 
+    ss1DmgAmp = ss1.damageAmplifier - ss2IncomingDmgAmp
+    if ss1DmgAmp < 1:
+        ss1DmgAmp = 1
+    ss2DmgAmp = ss2.damageAmplifier - ss1IncomingDmgAmp
+    if ss2DmgAmp < 1:
+        ss2DmgAmp = 1
+
+    ss1Canons = ss1.canons
+    if ss1Canons < 1:
+        ss1Canons = 1
+    ss2Canons = ss1.canons
+    if ss2Canons < 1:
+        ss2Canons = 1
+
     health1 = ss1.shields * ss1.health
     health2 = ss2.shields * ss2.health
     if ss1.attackSpeed > ss2.attackSpeed:
-        health2 -= (ss1.canons * (ss1.damageAmplifier - ss2IncomingDmgAmp))
+        health2 -= (ss1Canons * ss1DmgAmp)
         if globVarSpaceshipIndex == 1:
             print ("remaining health of ss2: " + str(health2))
         if health2 < 0:
             return -1
             
     for x in range(10):
-        health1 -= (ss2.canons * (ss2.damageAmplifier - ss1IncomingDmgAmp))
+        health1 -= (ss2Canons * ss2DmgAmp)
         if globVarSpaceshipIndex == 1:
             print("remaining health of ss1: " + str(health1))
         if health1 < 0:
             return 1
-        health2 -= (ss1.canons * (ss1.damageAmplifier - ss2IncomingDmgAmp))
+        health2 -= (ss1Canons * ss2DmgAmp)
         if globVarSpaceshipIndex == 1:
             print ("remaining health of ss2: " + str(health2))
         if health2 < 0:
             return -1
-    #print("this shouldnt happen")
-    #todo fix this 0
     return 0
         
 
 def main():
     idIncrement = 501
     spaceshipsList = generateSpaceShips()
-    for x in range(500):
+    
+    for x in range(30):
         lostSpaceshipsList, remainingIndexes = battlecontroller(spaceshipsList)
         for x in range(len(lostSpaceshipsList)):
             deadIndex = lostSpaceshipsList[x]
             spaceshipsList[deadIndex] = spaceshipsList[remainingIndexes[x % len(remainingIndexes)]].generateOffSpring(idIncrement+1)
 
+    print( "list of surviving 1000 spaceships:")
     for x in range(len(spaceshipsList)):
         print(spaceshipsList[x])
 
