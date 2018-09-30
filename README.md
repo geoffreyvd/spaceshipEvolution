@@ -11,3 +11,5 @@ The fights basically look like this:
                  then for every round inflict dmg on life
                  see who kills the other one in 5 rounds,
 4) none died? both lose!
+
+So it begins with 1000 species and will result in some species dominating and countering each other.
